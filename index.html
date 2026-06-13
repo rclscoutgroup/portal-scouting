@@ -30,9 +30,9 @@
             <p id="nombreUsuario" class="font-bold hidden sm:block bg-blue-800 px-4 py-1 rounded-full text-sm"></p>
         </header>
         
-        <main class="p-4 md:p-6 max-w-6xl mx-auto w-full grid grid-cols-1 md:grid-cols-2 gap-6 h-[calc(100vh-80px)]">
+        <main class="p-4 md:p-6 max-w-[1600px] mx-auto w-full grid grid-cols-1 lg:grid-cols-12 gap-6 h-[calc(100vh-80px)]">
             
-            <div class="flex flex-col gap-6 overflow-y-auto pr-2 pb-6">
+            <div class="lg:col-span-4 flex flex-col gap-6 overflow-y-auto pr-2 pb-6">
                 <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5 relative overflow-hidden">
                     <div class="absolute top-0 left-0 w-1 h-full bg-blue-600"></div>
                     <span class="bg-blue-50 text-blue-700 border border-blue-200 px-3 py-1 rounded-full text-xs font-bold uppercase">Tarea Activa</span>
@@ -60,28 +60,30 @@
                     <button id="btnCompletar" onclick="subirArchivos()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded transition shadow-sm">
                         Subir a Drive y Completar
                     </button>
-                    <p id="mensajeExito" class="text-emerald-600 text-sm font-bold text-center mt-3 bg-emerald-50 p-2 rounded hidden">¡Archivos subidos y Tarea Completada!</p>
+                    <p id="mensajeExito" class="text-emerald-600 text-sm font-bold text-center mt-3 bg-emerald-50 p-2 rounded hidden">¡Archivos subidos y Excel actualizado!</p>
                 </div>
             </div>
 
-            <div class="bg-white rounded-xl shadow-sm border border-slate-200 flex flex-col justify-center items-center p-8 h-full min-h-[400px] text-center">
-                <div class="max-w-sm">
-                    <div class="w-16 h-16 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center text-2xl mx-auto mb-4 shadow-sm">
-                        📊
-                    </div>
-                    <h2 class="text-xl font-black text-slate-900 mb-2">Tu Base de Datos de Jugadores</h2>
-                    <p class="text-slate-500 text-sm mb-6">Accede a tu formato oficial para registrar posiciones, atributos y descripciones técnicas de forma segura y sin bloqueos.</p>
-                    
-                    <button onclick="abrirExcelSeguro()" class="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-lg shadow-md transition transform hover:-translate-y-0.5 w-full justify-center">
-                        <span>🔓</span> Abrir Excel en Pestaña Segura
-                    </button>
+            <div class="lg:col-span-8 bg-white rounded-xl shadow-sm border border-slate-200 flex flex-col h-full min-h-[600px]">
+                <div class="flex justify-between items-center px-5 py-3 border-b border-slate-200 bg-slate-50 rounded-t-xl">
+                    <h2 class="text-md font-bold text-slate-800 flex items-center gap-2">
+                        <span>📊</span> Tu Base de Datos
+                    </h2>
+                    <span class="bg-emerald-100 text-emerald-800 border border-emerald-200 text-[10px] px-2 py-1 rounded font-bold uppercase tracking-wide flex items-center gap-1">
+                        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                        Sincronizado
+                    </span>
+                </div>
+                
+                <div id="visorExcel" class="w-full flex-grow bg-slate-200 flex items-center justify-center rounded-b-xl overflow-hidden">
+                    <p class="text-slate-500 font-medium animate-pulse">Cargando base de datos...</p>
                 </div>
             </div>
         </main>
     </div>
 
     <script>
-        // PEGA AQUÍ LA NUEVA URL DE APPS SCRIPT
+        // ¡ACTUALIZA ESTA URL CON LA NUEVA VERSIÓN IMPLEMENTADA!
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxNQAdOPguxiqPQWSPuNHAUm3WO1_e5RnYO_PwtsZW03FycnfFbb389TOXzO0JV-7BN/exec"; 
         let datosUsuario = {};
 
@@ -94,7 +96,7 @@
             return await respuesta.json();
         }
 
-        // --- LOGIN ---
+        // --- SISTEMA DE LOGIN ---
         document.getElementById("loginForm").addEventListener("submit", async (e) => {
             e.preventDefault();
             document.getElementById("btnLogin").innerText = "Verificando Credenciales...";
@@ -107,18 +109,28 @@
                 if(res.exito) {
                     datosUsuario = res;
                     
+                    // Rellenar datos en la interfaz
                     document.getElementById("nombreUsuario").innerText = `Analista: ${res.nombre}`;
                     document.getElementById("txtPartido").innerText = res.partido || "Sin partido asignado";
                     document.getElementById("txtEquipo").innerText = res.equipo || "-";
                     document.getElementById("btnVerPartido").href = res.link || "#";
 
+                    // Cargar el Excel integrado del usuario (con rm=minimal para ocultar menús)
+                    const contenedorVisor = document.getElementById("visorExcel");
+                    if(datosUsuario.idExcel) {
+                        contenedorVisor.innerHTML = `<iframe src="https://docs.google.com/spreadsheets/d/${datosUsuario.idExcel}/edit?rm=minimal" class="w-full h-full border-0"></iframe>`;
+                    } else {
+                        contenedorVisor.innerHTML = `<p class="text-red-500 font-medium bg-red-50 p-4 rounded border border-red-200">No tienes un ID de Excel configurado en tu perfil.</p>`;
+                    }
+
+                    // Cambiar de pantalla
                     document.getElementById("login-screen").classList.add("hidden");
                     document.getElementById("dashboard-screen").classList.remove("hidden");
                 } else {
                     mostrarError("Credenciales incorrectas o usuario no encontrado.");
                 }
             } catch (error) {
-                mostrarError("Error de conexión. Revisa que la URL SCRIPT_URL sea correcta.");
+                mostrarError("Error de conexión. Revisa que la URL de SCRIPT_URL sea correcta.");
             }
         });
 
@@ -129,16 +141,7 @@
             document.getElementById("btnLogin").innerText = "Acceder al Panel";
         }
 
-        // --- APERTURA SEGURA DEL EXCEL ---
-        function abrirExcelSeguro() {
-            if(datosUsuario.idExcel) {
-                window.open(`https://docs.google.com/spreadsheets/d/${datosUsuario.idExcel}/edit`, '_blank');
-            } else {
-                alert("Error: No se ha encontrado ningún archivo Excel en tu carpeta asignada. Contacta con coordinación.");
-            }
-        }
-
-        // --- SUBIDA A DRIVE ---
+        // --- SISTEMA DE SUBIDA A DRIVE ---
         function leerBase64(file) {
             return new Promise((resolve, reject) => {
                 const reader = new FileReader(); 
@@ -150,7 +153,7 @@
 
         async function subirArchivos() {
             if(!datosUsuario.idCarpeta) { 
-                alert("Error: No tienes una carpeta asignada en el sistema."); 
+                alert("Error: No tienes una carpeta de Drive asignada en la base de datos."); 
                 return; 
             }
             
@@ -158,14 +161,15 @@
             const videoFile = document.getElementById("fileVideo").files[0];
 
             if(!pdfFile && !videoFile) {
-                alert("Selecciona al menos un archivo (PDF o Vídeo) para entregar.");
+                alert("Por favor, selecciona al menos un archivo (PDF o Vídeo) para entregar la tarea.");
                 return;
             }
 
             const btn = document.getElementById("btnCompletar");
-            btn.innerText = "Subiendo archivos... Espera"; 
+            btn.innerText = "Subiendo archivos... Espera por favor"; 
             btn.disabled = true;
             btn.classList.replace("bg-emerald-600", "bg-slate-500");
+            btn.classList.replace("hover:bg-emerald-700", "cursor-wait");
 
             let payload = { 
                 accion: "subir_y_completar", 
@@ -190,19 +194,20 @@
                     btn.classList.replace("bg-slate-500", "bg-emerald-600");
                     document.getElementById("mensajeExito").classList.remove("hidden");
                 } else {
-                    alert("Error en el servidor al guardar.");
-                    resetBoton(btn);
+                    alert("Hubo un error guardando los archivos: " + res.error);
+                    resetBotonesSubida(btn);
                 }
             } catch (error) {
-                alert("Falló la subida. Revisa el tamaño del vídeo.");
-                resetBoton(btn);
+                alert("Falló la conexión al subir los archivos. Comprueba el tamaño del vídeo o tu conexión.");
+                resetBotonesSubida(btn);
             }
         }
 
-        function resetBoton(btn) {
+        function resetBotonesSubida(btn) {
             btn.innerText = "Subir a Drive y Completar";
             btn.disabled = false;
             btn.classList.replace("bg-slate-500", "bg-emerald-600");
+            btn.classList.replace("cursor-wait", "hover:bg-emerald-700");
         }
     </script>
 </body>
