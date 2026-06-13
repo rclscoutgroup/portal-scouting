@@ -3,77 +3,79 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Portal de Captación</title>
+    <title>Portal RCL Scout Group</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-slate-50 text-slate-800 font-sans">
 
     <div id="login-screen" class="min-h-screen flex items-center justify-center px-4">
-        <div class="max-w-md w-full bg-white rounded-xl shadow-lg p-8">
-            <div class="text-center mb-8">
-                <img src="https://santapolacf.es/images/ESCUDO3.png" alt="Escudo" class="h-28 mx-auto mb-5 drop-shadow-lg">
-                <h1 class="text-2xl font-black text-slate-900 tracking-tighter">PORTAL DE CAPTACIÓN</h1>
-            </div>
-            <form id="loginForm" class="space-y-6">
-                <div>
-                    <label class="block text-sm font-bold mb-2">Correo Corporativo</label>
-                    <input type="email" id="correo" required class="w-full px-4 py-3 rounded-lg border border-slate-200 outline-none focus:border-blue-600">
-                </div>
-                <button type="submit" id="btnLogin" class="w-full bg-blue-900 text-white font-bold py-3 rounded-lg shadow-md">
-                    Acceder a mi panel
-                </button>
+        <div class="max-w-md w-full bg-white rounded-xl shadow-lg p-8 text-center">
+            <img src="https://santapolacf.es/images/ESCUDO3.png" alt="Escudo" class="h-28 mx-auto mb-5 drop-shadow-lg">
+            <h1 class="text-2xl font-black text-slate-900 mb-6">PORTAL DE OJEADORES</h1>
+            <form id="loginForm" class="space-y-4">
+                <input type="email" id="correo" placeholder="Correo asignado" required class="w-full px-4 py-3 rounded border border-slate-300 outline-none focus:border-blue-600">
+                <input type="password" id="contrasena" placeholder="Contraseña" required class="w-full px-4 py-3 rounded border border-slate-300 outline-none focus:border-blue-600">
+                <button type="submit" id="btnLogin" class="w-full bg-blue-900 hover:bg-blue-800 text-white font-bold py-3 rounded transition">Acceder</button>
             </form>
-            <p id="loginError" class="text-red-500 text-sm text-center mt-4 hidden"></p>
+            <p id="loginError" class="text-red-500 text-sm mt-4 hidden"></p>
         </div>
     </div>
 
     <div id="dashboard-screen" class="hidden min-h-screen flex flex-col">
         <header class="bg-blue-900 text-white p-4 shadow-md flex justify-between items-center">
-            <div class="flex items-center gap-4">
-                <img src="https://santapolacf.es/images/ESCUDO3.png" class="h-10 drop-shadow-md">
-                <h1 class="text-lg font-bold">MIS JUGADORES ASIGNADOS</h1>
+            <div class="flex items-center gap-3">
+                <img src="https://santapolacf.es/images/ESCUDO3.png" class="h-10">
+                <h1 class="text-lg font-bold">RCL SCOUT GROUP</h1>
             </div>
+            <p id="nombreUsuario" class="font-bold hidden sm:block"></p>
         </header>
         
-        <main class="p-6 max-w-4xl mx-auto w-full">
-            <div id="listaJugadores" class="space-y-4">
-                <p class="text-center text-slate-500">Cargando base de datos...</p>
+        <main class="p-6 max-w-3xl mx-auto w-full">
+            <div class="flex justify-between items-end mb-6 border-b pb-2">
+                <h2 class="text-2xl font-bold">Tu Asignación Actual</h2>
+                <button onclick="abrirCarpeta()" class="bg-slate-800 hover:bg-slate-700 text-white px-4 py-2 rounded text-sm font-bold shadow transition">📂 Abrir mi Carpeta</button>
+            </div>
+            
+            <div class="bg-white rounded-xl shadow border p-6">
+                <div class="mb-6 pb-6 border-b border-slate-200">
+                    <span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide">Tarea Leída</span>
+                    <h3 id="txtPartido" class="text-xl font-bold mt-3 text-slate-800"></h3>
+                    <p class="text-slate-500 font-medium mt-1">Objetivo: <span id="txtEquipo" class="text-slate-800"></span></p>
+                    
+                    <div class="mt-4">
+                        <a id="btnVerPartido" href="#" target="_blank" class="inline-block bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-6 rounded shadow transition">▶️ Ver Partido</a>
+                    </div>
+                </div>
+
+                <h4 class="font-bold text-lg mb-3">Entregar Informe</h4>
+                <div class="space-y-4 mb-6">
+                    <div class="bg-slate-50 p-3 rounded border border-slate-200">
+                        <label class="block text-sm font-bold mb-1">📄 Subir PDF</label>
+                        <input type="file" id="filePdf" accept=".pdf" class="w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:bg-blue-100 file:text-blue-700 file:font-bold">
+                    </div>
+                    <div class="bg-slate-50 p-3 rounded border border-slate-200">
+                        <label class="block text-sm font-bold mb-1">🎞️ Subir Vídeo</label>
+                        <input type="file" id="fileVideo" accept="video/mp4,video/*" class="w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:bg-blue-100 file:text-blue-700 file:font-bold">
+                    </div>
+                </div>
+
+                <button id="btnCompletar" onclick="subirArchivos()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded transition shadow">
+                    Subir Archivos y Marcar Completado
+                </button>
+                <p id="mensajeExito" class="text-green-600 font-bold text-center mt-4 hidden">¡Tarea completada y guardada en el Excel!</p>
             </div>
         </main>
     </div>
 
-    <div id="modalEdicion" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
-        <div class="bg-white rounded-xl max-w-lg w-full p-6">
-            <h2 id="modalNombre" class="text-xl font-bold mb-4">Editar Jugador</h2>
-            <div class="space-y-4">
-                <div>
-                    <label class="block text-sm font-bold mb-1">Atributos Clave</label>
-                    <input type="text" id="editAtributos" class="w-full px-3 py-2 border rounded">
-                </div>
-                <div>
-                    <label class="block text-sm font-bold mb-1">Descripción / Informe</label>
-                    <textarea id="editDescripcion" rows="4" class="w-full px-3 py-2 border rounded"></textarea>
-                </div>
-                <div class="flex gap-4 pt-2">
-                    <button onclick="cerrarModal()" class="w-1/3 bg-slate-200 py-2 rounded font-bold">Cancelar</button>
-                    <button onclick="guardarEdicion()" id="btnGuardar" class="w-2/3 bg-blue-600 text-white py-2 rounded font-bold">Guardar en Excel</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <script>
-        // ¡¡PEGA AQUÍ LA URL DE TU APPS SCRIPT!!
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyHB7UobX7zhqBD6FGuBeH1kEByxefKPHzITzWKbF2NBtcZiUI8U2SIfSVkpyUn7nZImA/exec
-"; 
-        let idExcelUsuario = "";
-        let filaActualEditando = 0;
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxNQAdOPguxiqPQWSPuNHAUm3WO1_e5RnYO_PwtsZW03FycnfFbb389TOXzO0JV-7BN/exec"; // REEMPLAZA ESTO
+        let datosUsuario = {};
 
-        // FUNCIÓN PARA COMUNICARSE CON GOOGLE
         async function enviarA_Google(datos) {
             const respuesta = await fetch(SCRIPT_URL, {
                 method: "POST",
-                body: JSON.stringify(datos)
+                body: JSON.stringify(datos),
+                headers: { "Content-Type": "text/plain;charset=utf-8" }
             });
             return await respuesta.json();
         }
@@ -82,75 +84,98 @@
         document.getElementById("loginForm").addEventListener("submit", async (e) => {
             e.preventDefault();
             document.getElementById("btnLogin").innerText = "Verificando...";
+            
             const correo = document.getElementById("correo").value;
+            const contrasena = document.getElementById("contrasena").value;
             
-            const res = await enviarA_Google({ accion: "login", correo: correo });
-            
-            if(res.exito) {
-                idExcelUsuario = res.idExcel;
-                document.getElementById("login-screen").classList.add("hidden");
-                document.getElementById("dashboard-screen").classList.remove("hidden");
-                cargarJugadores();
-            } else {
-                document.getElementById("loginError").innerText = "Correo no encontrado en la ruta.";
-                document.getElementById("loginError").classList.remove("hidden");
-                document.getElementById("btnLogin").innerText = "Acceder a mi panel";
+            try {
+                const res = await enviarA_Google({ accion: "login", correo: correo, contrasena: contrasena });
+                if(res.exito) {
+                    datosUsuario = res;
+                    // Llenar el panel con los datos de Excel
+                    document.getElementById("nombreUsuario").innerText = `Hola, ${res.nombre}`;
+                    document.getElementById("txtPartido").innerText = res.partido || "Sin partido asignado";
+                    document.getElementById("txtEquipo").innerText = res.equipo || "-";
+                    document.getElementById("btnVerPartido").href = res.link || "#";
+
+                    document.getElementById("login-screen").classList.add("hidden");
+                    document.getElementById("dashboard-screen").classList.remove("hidden");
+                } else {
+                    mostrarErrorLogin("Credenciales incorrectas.");
+                }
+            } catch (error) {
+                mostrarErrorLogin("Error de conexión.");
             }
         });
 
-        // 2. CARGAR LOS JUGADORES DEL EXCEL
-        async function cargarJugadores() {
-            const res = await enviarA_Google({ accion: "cargar_datos", idExcel: idExcelUsuario });
-            const contenedor = document.getElementById("listaJugadores");
-            contenedor.innerHTML = "";
+        function mostrarErrorLogin(msg) {
+            const err = document.getElementById("loginError");
+            err.innerText = msg;
+            err.classList.remove("hidden");
+            document.getElementById("btnLogin").innerText = "Acceder";
+        }
 
-            res.datos.forEach(jugador => {
-                contenedor.innerHTML += `
-                    <div class="bg-white p-4 rounded-lg shadow-sm border border-slate-200 cursor-pointer hover:border-blue-400 transition" 
-                         onclick="abrirModal(${jugador.fila}, '${jugador.nombre} ${jugador.apellidos}', '${jugador.atributos}', '${jugador.descripcion}')">
-                        <div class="flex justify-between items-start">
-                            <div>
-                                <h3 class="font-bold text-lg">${jugador.nombre} ${jugador.apellidos}</h3>
-                                <p class="text-sm text-slate-500">POS: ${jugador.posicion} | ALT: ${jugador.altura}</p>
-                            </div>
-                            <span class="bg-slate-100 text-slate-600 px-3 py-1 rounded text-xs font-bold">✏️ Editar</span>
-                        </div>
-                        <p class="text-sm mt-2 text-slate-700 truncate line-clamp-2">${jugador.descripcion || "Sin informe redactado..."}</p>
-                    </div>
-                `;
+        function abrirCarpeta() {
+            if(datosUsuario.idCarpeta) {
+                window.open(`https://drive.google.com/drive/folders/${datosUsuario.idCarpeta}`, '_blank');
+            } else {
+                alert("No tienes una carpeta de Drive asignada.");
+            }
+        }
+
+        function leerBase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = () => resolve(reader.result.split(',')[1]);
+                reader.onerror = error => reject(error);
             });
         }
 
-        // 3. INTERFAZ DE EDICIÓN
-        function abrirModal(fila, nombreComp, atributos, descripcion) {
-            filaActualEditando = fila;
-            document.getElementById("modalNombre").innerText = nombreComp;
-            document.getElementById("editAtributos").value = atributos !== 'undefined' ? atributos : '';
-            document.getElementById("editDescripcion").value = descripcion !== 'undefined' ? descripcion : '';
-            document.getElementById("modalEdicion").classList.remove("hidden");
-        }
+        // 2. SUBIR ARCHIVOS Y COMPLETAR
+        async function subirArchivos() {
+            if(!datosUsuario.idCarpeta) {
+                alert("Error: Falta el ID de tu carpeta."); return;
+            }
 
-        function cerrarModal() {
-            document.getElementById("modalEdicion").classList.add("hidden");
-        }
+            const btn = document.getElementById("btnCompletar");
+            btn.innerText = "Procesando... No cierres la ventana";
+            btn.disabled = true;
+            btn.classList.replace("bg-emerald-600", "bg-slate-400");
 
-        async function guardarEdicion() {
-            document.getElementById("btnGuardar").innerText = "Guardando...";
-            const datosEditados = {
-                fila: filaActualEditando,
-                atributos: document.getElementById("editAtributos").value,
-                descripcion: document.getElementById("editDescripcion").value
+            const pdfFile = document.getElementById("filePdf").files[0];
+            const videoFile = document.getElementById("fileVideo").files[0];
+
+            let payload = {
+                accion: "subir_y_completar",
+                fila: datosUsuario.fila,
+                idCarpeta: datosUsuario.idCarpeta
             };
 
-            await enviarA_Google({ 
-                accion: "actualizar_fila", 
-                idExcel: idExcelUsuario, 
-                datosFila: datosEditados 
-            });
+            if(pdfFile) {
+                payload.pdfBase64 = await leerBase64(pdfFile);
+                payload.pdfNombre = pdfFile.name;
+            }
+            if(videoFile) {
+                payload.videoBase64 = await leerBase64(videoFile);
+                payload.videoMime = videoFile.type;
+                payload.videoNombre = videoFile.name;
+            }
 
-            cerrarModal();
-            document.getElementById("btnGuardar").innerText = "Guardar en Excel";
-            cargarJugadores(); // Recargar para ver los cambios
+            try {
+                const res = await enviarA_Google(payload);
+                if(res.exito) {
+                    btn.innerText = "¡Completado!";
+                    btn.classList.replace("bg-slate-400", "bg-emerald-600");
+                    document.getElementById("mensajeExito").classList.remove("hidden");
+                } else {
+                    alert("Error en la base de datos.");
+                    btn.innerText = "Intentar de nuevo";
+                    btn.disabled = false;
+                }
+            } catch(e) {
+                alert("Falló la conexión.");
+            }
         }
     </script>
 </body>
