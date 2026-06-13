@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portal de Captación</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans">
+
+    <div id="login-screen" class="min-h-screen flex items-center justify-center px-4">
+        <div class="max-w-md w-full bg-white rounded-xl shadow-lg p-8">
+            <div class="text-center mb-8">
+                <img src="https://santapolacf.es/images/ESCUDO3.png" alt="Escudo" class="h-28 mx-auto mb-5 drop-shadow-lg">
+                <h1 class="text-2xl font-black text-slate-900 tracking-tighter">PORTAL DE CAPTACIÓN</h1>
+            </div>
+            <form id="loginForm" class="space-y-6">
+                <div>
+                    <label class="block text-sm font-bold mb-2">Correo Corporativo</label>
+                    <input type="email" id="correo" required class="w-full px-4 py-3 rounded-lg border border-slate-200 outline-none focus:border-blue-600">
+                </div>
+                <button type="submit" id="btnLogin" class="w-full bg-blue-900 text-white font-bold py-3 rounded-lg shadow-md">
+                    Acceder a mi panel
+                </button>
+            </form>
+            <p id="loginError" class="text-red-500 text-sm text-center mt-4 hidden"></p>
+        </div>
+    </div>
+
+    <div id="dashboard-screen" class="hidden min-h-screen flex flex-col">
+        <header class="bg-blue-900 text-white p-4 shadow-md flex justify-between items-center">
+            <div class="flex items-center gap-4">
+                <img src="https://santapolacf.es/images/ESCUDO3.png" class="h-10 drop-shadow-md">
+                <h1 class="text-lg font-bold">MIS JUGADORES ASIGNADOS</h1>
+            </div>
+        </header>
+        
+        <main class="p-6 max-w-4xl mx-auto w-full">
+            <div id="listaJugadores" class="space-y-4">
+                <p class="text-center text-slate-500">Cargando base de datos...</p>
+            </div>
+        </main>
+    </div>
+
+    <div id="modalEdicion" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl max-w-lg w-full p-6">
+            <h2 id="modalNombre" class="text-xl font-bold mb-4">Editar Jugador</h2>
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-bold mb-1">Atributos Clave</label>
+                    <input type="text" id="editAtributos" class="w-full px-3 py-2 border rounded">
+                </div>
+                <div>
+                    <label class="block text-sm font-bold mb-1">Descripción / Informe</label>
+                    <textarea id="editDescripcion" rows="4" class="w-full px-3 py-2 border rounded"></textarea>
+                </div>
+                <div class="flex gap-4 pt-2">
+                    <button onclick="cerrarModal()" class="w-1/3 bg-slate-200 py-2 rounded font-bold">Cancelar</button>
+                    <button onclick="guardarEdicion()" id="btnGuardar" class="w-2/3 bg-blue-600 text-white py-2 rounded font-bold">Guardar en Excel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ¡¡PEGA AQUÍ LA URL DE TU APPS SCRIPT!!
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyHB7UobX7zhqBD6FGuBeH1kEByxefKPHzITzWKbF2NBtcZiUI8U2SIfSVkpyUn7nZImA/exec
+"; 
+        let idExcelUsuario = "";
+        let filaActualEditando = 0;
+
+        // FUNCIÓN PARA COMUNICARSE CON GOOGLE
+        async function enviarA_Google(datos) {
+            const respuesta = await fetch(SCRIPT_URL, {
+                method: "POST",
+                body: JSON.stringify(datos)
+            });
+            return await respuesta.json();
+        }
+
+        // 1. INICIAR SESIÓN
+        document.getElementById("loginForm").addEventListener("submit", async (e) => {
+            e.preventDefault();
+            document.getElementById("btnLogin").innerText = "Verificando...";
+            const correo = document.getElementById("correo").value;
+            
+            const res = await enviarA_Google({ accion: "login", correo: correo });
+            
+            if(res.exito) {
+                idExcelUsuario = res.idExcel;
+                document.getElementById("login-screen").classList.add("hidden");
+                document.getElementById("dashboard-screen").classList.remove("hidden");
+                cargarJugadores();
+            } else {
+                document.getElementById("loginError").innerText = "Correo no encontrado en la ruta.";
+                document.getElementById("loginError").classList.remove("hidden");
+                document.getElementById("btnLogin").innerText = "Acceder a mi panel";
+            }
+        });
+
+        // 2. CARGAR LOS JUGADORES DEL EXCEL
+        async function cargarJugadores() {
+            const res = await enviarA_Google({ accion: "cargar_datos", idExcel: idExcelUsuario });
+            const contenedor = document.getElementById("listaJugadores");
+            contenedor.innerHTML = "";
+
+            res.datos.forEach(jugador => {
+                contenedor.innerHTML += `
+                    <div class="bg-white p-4 rounded-lg shadow-sm border border-slate-200 cursor-pointer hover:border-blue-400 transition" 
+                         onclick="abrirModal(${jugador.fila}, '${jugador.nombre} ${jugador.apellidos}', '${jugador.atributos}', '${jugador.descripcion}')">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <h3 class="font-bold text-lg">${jugador.nombre} ${jugador.apellidos}</h3>
+                                <p class="text-sm text-slate-500">POS: ${jugador.posicion} | ALT: ${jugador.altura}</p>
+                            </div>
+                            <span class="bg-slate-100 text-slate-600 px-3 py-1 rounded text-xs font-bold">✏️ Editar</span>
+                        </div>
+                        <p class="text-sm mt-2 text-slate-700 truncate line-clamp-2">${jugador.descripcion || "Sin informe redactado..."}</p>
+                    </div>
+                `;
+            });
+        }
+
+        // 3. INTERFAZ DE EDICIÓN
+        function abrirModal(fila, nombreComp, atributos, descripcion) {
+            filaActualEditando = fila;
+            document.getElementById("modalNombre").innerText = nombreComp;
+            document.getElementById("editAtributos").value = atributos !== 'undefined' ? atributos : '';
+            document.getElementById("editDescripcion").value = descripcion !== 'undefined' ? descripcion : '';
+            document.getElementById("modalEdicion").classList.remove("hidden");
+        }
+
+        function cerrarModal() {
+            document.getElementById("modalEdicion").classList.add("hidden");
+        }
+
+        async function guardarEdicion() {
+            document.getElementById("btnGuardar").innerText = "Guardando...";
+            const datosEditados = {
+                fila: filaActualEditando,
+                atributos: document.getElementById("editAtributos").value,
+                descripcion: document.getElementById("editDescripcion").value
+            };
+
+            await enviarA_Google({ 
+                accion: "actualizar_fila", 
+                idExcel: idExcelUsuario, 
+                datosFila: datosEditados 
+            });
+
+            cerrarModal();
+            document.getElementById("btnGuardar").innerText = "Guardar en Excel";
+            cargarJugadores(); // Recargar para ver los cambios
+        }
+    </script>
+</body>
+</html>
