@@ -24,24 +24,18 @@
 
     <div id="dashboard-screen" class="hidden min-h-screen flex flex-col">
         <header class="bg-blue-900 text-white p-4 shadow-md flex justify-between items-center sticky top-0 z-10">
-            <div class="flex items-center gap-3">
-                <img src="https://santapolacf.es/images/ESCUDO3.png" class="h-10">
-                <h1 class="text-lg font-bold">RCL SCOUT GROUP</h1>
-            </div>
+            <div class="flex items-center gap-3"><img src="https://santapolacf.es/images/ESCUDO3.png" class="h-10"><h1 class="text-lg font-bold">RCL SCOUT GROUP</h1></div>
             <p id="nombreUsuario" class="font-bold bg-blue-800 px-4 py-1 rounded-full text-sm"></p>
         </header>
         
         <main class="p-4 md:p-6 max-w-[1600px] mx-auto w-full grid grid-cols-1 lg:grid-cols-12 gap-6 h-[calc(100vh-80px)]">
-            
             <div class="lg:col-span-4 flex flex-col gap-6 overflow-y-auto pr-2 pb-6">
                 <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5 relative">
                     <div class="absolute top-0 left-0 w-1 h-full bg-blue-600 rounded-l-xl"></div>
                     <span class="bg-blue-50 text-blue-700 border border-blue-200 px-3 py-1 rounded-full text-xs font-bold uppercase">Tarea Activa</span>
                     <h3 id="txtPartido" class="text-lg font-bold mt-4 text-slate-800"></h3>
                     <p class="text-slate-600 text-sm mt-2 mb-5 bg-slate-50 p-2 rounded border">Objetivo: <span id="txtEquipo" class="font-bold text-slate-800"></span></p>
-                    <a id="btnVerPartido" href="#" target="_blank" class="flex items-center justify-center gap-2 w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-2.5 rounded shadow-sm">
-                        ▶️ Ver Partido
-                    </a>
+                    <a id="btnVerPartido" href="#" target="_blank" class="flex items-center justify-center gap-2 w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-2.5 rounded shadow-sm">▶️ Ver Partido</a>
                 </div>
 
                 <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5">
@@ -57,7 +51,7 @@
                         </div>
                     </div>
                     <button id="btnCompletar" onclick="subirArchivos()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded shadow-sm">Subir a Drive y Completar</button>
-                    <p id="mensajeExito" class="text-emerald-600 text-sm font-bold text-center mt-3 hidden">¡Archivos subidos y Tarea Completada!</p>
+                    <p id="mensajeExito" class="text-emerald-600 text-sm font-bold text-center mt-3 hidden">¡Archivos subidos!</p>
                 </div>
             </div>
 
@@ -73,9 +67,14 @@
     </div>
 
     <div id="admin-screen" class="hidden min-h-screen flex flex-col bg-slate-100">
-        <header class="bg-slate-900 text-white p-4 shadow-md flex justify-between items-center sticky top-0 z-10">
+        <header class="bg-slate-900 text-white p-4 shadow-md flex justify-between items-center sticky top-0 z-10 flex-wrap gap-4">
             <h1 class="text-lg font-bold">🛡️ PANEL DE COORDINACIÓN</h1>
-            <button onclick="cargarPanelAdmin()" class="bg-slate-700 hover:bg-slate-600 px-4 py-1 rounded text-sm font-bold">🔄 Actualizar</button>
+            <div class="flex gap-3">
+                <button id="btnExportar" onclick="exportarBDGlobal()" class="bg-emerald-600 hover:bg-emerald-500 px-4 py-2 rounded text-sm font-bold flex items-center gap-2 shadow transition">
+                    <span>📥</span> Unificar Base de Datos
+                </button>
+                <button onclick="cargarPanelAdmin()" class="bg-slate-700 hover:bg-slate-600 px-4 py-2 rounded text-sm font-bold shadow transition">🔄 Actualizar</button>
+            </div>
         </header>
 
         <main class="p-6 max-w-7xl mx-auto w-full">
@@ -86,7 +85,7 @@
                             <th class="px-6 py-4">Ojeador</th>
                             <th class="px-6 py-4">Estado</th>
                             <th class="px-6 py-4">Partido Asignado</th>
-                            <th class="px-6 py-4 text-center">Acciones</th>
+                            <th class="px-6 py-4 text-center">Gestión & Acciones</th>
                         </tr>
                     </thead>
                     <tbody id="tablaAdmin" class="divide-y divide-slate-100">
@@ -102,13 +101,11 @@
             <h2 class="text-xl font-bold mb-4 border-b pb-2">Asignar Nuevo Partido</h2>
             <p id="nombreAsignar" class="text-sm text-blue-600 font-bold mb-4"></p>
             <input type="hidden" id="asignarFila">
-            
             <div class="space-y-4 mb-6">
                 <div><label class="block text-xs font-bold mb-1 text-slate-500">PARTIDO</label><input type="text" id="asigPartido" class="w-full px-3 py-2 border rounded text-sm outline-none"></div>
                 <div><label class="block text-xs font-bold mb-1 text-slate-500">EQUIPO A ANALIZAR</label><input type="text" id="asigEquipo" class="w-full px-3 py-2 border rounded text-sm outline-none"></div>
                 <div><label class="block text-xs font-bold mb-1 text-slate-500">LINK DEL VÍDEO</label><input type="text" id="asigLink" class="w-full px-3 py-2 border rounded text-sm outline-none"></div>
             </div>
-            
             <div class="flex justify-end gap-3 pt-4 border-t border-slate-100">
                 <button onclick="cerrarModalAsignar()" class="bg-slate-200 px-4 py-2 rounded font-bold text-sm">Cancelar</button>
                 <button id="btnGuardarAsignacion" onclick="guardarAsignacion()" class="bg-slate-900 text-white px-5 py-2 rounded font-bold text-sm">Enviar</button>
@@ -141,18 +138,15 @@
                     document.getElementById("login-screen").classList.add("hidden");
 
                     if(res.isAdmin) {
-                        // ENTRA EL ADMIN
                         document.getElementById("admin-screen").classList.remove("hidden");
                         cargarPanelAdmin();
                     } else {
-                        // ENTRA EL OJEADOR
                         document.getElementById("dashboard-screen").classList.remove("hidden");
                         document.getElementById("nombreUsuario").innerText = `Analista: ${res.nombre}`;
                         document.getElementById("txtPartido").innerText = res.partido || "Sin partido asignado";
                         document.getElementById("txtEquipo").innerText = res.equipo || "-";
                         document.getElementById("btnVerPartido").href = res.link || "#";
 
-                        // AQUÍ ESTÁ EL CÓDIGO QUE INCRUSTA EL EXCEL DE NUEVO
                         if(datosUsuario.idExcel) {
                             document.getElementById("visorExcel").innerHTML = `<iframe src="https://docs.google.com/spreadsheets/d/${datosUsuario.idExcel}/edit?rm=minimal" class="w-full h-full border-0"></iframe>`;
                         } else {
@@ -169,7 +163,7 @@
             document.getElementById("btnLogin").innerText = "Acceder al Sistema";
         }
 
-        // --- 2. SUBIDA DE ARCHIVOS (OJEADOR) ---
+        // --- 2. SUBIDA DE ARCHIVOS ---
         function leerBase64(file) {
             return new Promise((resolve, reject) => {
                 const reader = new FileReader(); reader.readAsDataURL(file);
@@ -204,20 +198,55 @@
                     let bLeido = oj.leido ? `<span class="bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs font-bold mr-2">👁️ Leído</span>` : `<span class="bg-slate-100 text-slate-500 px-2 py-1 rounded text-xs font-bold mr-2">No Leído</span>`;
                     let bComp = oj.completado ? `<span class="bg-emerald-100 text-emerald-800 px-2 py-1 rounded text-xs font-bold">✅ Completado</span>` : `<span class="bg-amber-100 text-amber-800 px-2 py-1 rounded text-xs font-bold">⏳ Pendiente</span>`;
                     let lCarpeta = oj.idCarpeta ? `https://drive.google.com/drive/folders/${oj.idCarpeta}` : '#';
+                    
+                    // Botón nuevo para ver el Excel directamente
+                    let btnExcel = oj.idExcel ? `<button onclick="window.open('https://docs.google.com/spreadsheets/d/${oj.idExcel}/edit', '_blank')" class="bg-emerald-100 hover:bg-emerald-200 text-emerald-800 px-3 py-1 rounded text-xs font-bold transition">📊 Ver BD</button>` : `<span class="bg-slate-100 text-slate-400 px-3 py-1 rounded text-xs font-bold">Sin BD</span>`;
+
                     tabla.innerHTML += `
-                        <tr class="hover:bg-slate-50">
-                            <td class="px-6 py-4 font-bold">${oj.nombre}</td>
+                        <tr class="hover:bg-slate-50 border-b border-slate-50">
+                            <td class="px-6 py-4 font-bold text-slate-700">${oj.nombre}</td>
                             <td class="px-6 py-4">${bLeido} ${bComp}</td>
-                            <td class="px-6 py-4"><p class="text-sm font-bold">${oj.partido || 'Libre'}</p><p class="text-xs text-slate-500">${oj.equipo || '-'}</p></td>
-                            <td class="px-6 py-4 text-center space-x-2">
-                                <a href="${lCarpeta}" target="_blank" class="bg-slate-200 px-3 py-1 rounded text-xs font-bold">📁 Carpeta</a>
-                                <button onclick="abrirModalAsignar(${oj.fila}, '${oj.nombre}', '${oj.partido}', '${oj.equipo}', '${oj.link}')" class="bg-blue-600 text-white px-3 py-1 rounded text-xs font-bold shadow">🎯 Asignar</button>
+                            <td class="px-6 py-4"><p class="text-sm font-bold text-slate-800">${oj.partido || 'Libre'}</p><p class="text-xs text-slate-500">${oj.equipo || '-'}</p></td>
+                            <td class="px-6 py-4 text-center space-x-1">
+                                <a href="${lCarpeta}" target="_blank" class="inline-block bg-slate-200 hover:bg-slate-300 px-3 py-1 rounded text-xs font-bold transition">📁 Carpeta</a>
+                                ${btnExcel}
+                                <button onclick="abrirModalAsignar(${oj.fila}, '${oj.nombre}', '${oj.partido}', '${oj.equipo}', '${oj.link}')" class="bg-blue-600 text-white px-3 py-1 rounded text-xs font-bold shadow transition ml-2">🎯 Asignar</button>
                             </td>
                         </tr>`;
                 });
             }
         }
 
+        // --- 4. EXPORTAR BD GLOBAL ---
+        async function exportarBDGlobal() {
+            const btn = document.getElementById("btnExportar");
+            const originalText = btn.innerHTML;
+            btn.innerHTML = "⏳ Extrayendo datos (Puede tardar)...";
+            btn.disabled = true;
+            btn.classList.replace("bg-emerald-600", "bg-slate-500");
+
+            try {
+                const res = await enviarA_Google({ accion: "exportar_global" });
+                if(res.exito && res.url) {
+                    window.open(res.url, '_blank'); // Abre el nuevo excel global
+                    btn.innerHTML = "✅ BD Generada con Éxito";
+                } else {
+                    alert("Error generando la base de datos.");
+                    btn.innerHTML = originalText;
+                }
+            } catch(e) {
+                alert("Fallo de conexión al extraer la BD.");
+                btn.innerHTML = originalText;
+            }
+            
+            setTimeout(() => {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+                btn.classList.replace("bg-slate-500", "bg-emerald-600");
+            }, 4000);
+        }
+
+        // --- MODALES ADMIN ---
         function abrirModalAsignar(fila, nombre, partido, equipo, link) {
             document.getElementById("asignarFila").value = fila; document.getElementById("nombreAsignar").innerText = `Para: ${nombre}`;
             document.getElementById("asigPartido").value = partido && partido !== 'undefined' ? partido : "";
