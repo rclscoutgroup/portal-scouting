@@ -44,47 +44,79 @@
                 </div>
 
                 <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5">
-                    <h4 class="font-bold mb-4 text-slate-800 flex items-center gap-2">
-                        <span>📁</span> Entregar Archivos
-                    </h4>
+                    <h4 class="font-bold mb-4 text-slate-800">📁 Entregar Archivos</h4>
                     <div class="space-y-4 mb-5">
                         <div class="border border-dashed border-slate-300 p-3 rounded-lg bg-slate-50 hover:bg-white transition">
                             <label class="block text-sm font-bold text-slate-700 mb-2">📄 Informe (PDF)</label>
-                            <input type="file" id="filePdf" accept=".pdf" class="w-full text-xs text-slate-500 file:mr-3 file:py-1.5 file:px-3 file:rounded file:border-0 file:bg-blue-100 file:text-blue-700 file:font-semibold cursor-pointer">
+                            <input type="file" id="filePdf" accept=".pdf" class="w-full text-xs text-slate-500 file:mr-3 file:py-1.5 file:px-3 file:rounded file:border-0 file:bg-blue-100 file:text-blue-700 font-semibold cursor-pointer">
                         </div>
                         <div class="border border-dashed border-slate-300 p-3 rounded-lg bg-slate-50 hover:bg-white transition">
                             <label class="block text-sm font-bold text-slate-700 mb-2">🎞️ Cortes (Vídeo)</label>
-                            <input type="file" id="fileVideo" accept="video/mp4,video/*" class="w-full text-xs text-slate-500 file:mr-3 file:py-1.5 file:px-3 file:rounded file:border-0 file:bg-blue-100 file:text-blue-700 file:font-semibold cursor-pointer">
+                            <input type="file" id="fileVideo" accept="video/mp4,video/*" class="w-full text-xs text-slate-500 file:mr-3 file:py-1.5 file:px-3 file:rounded file:border-0 file:bg-blue-100 file:text-blue-700 font-semibold cursor-pointer">
                         </div>
                     </div>
                     <button id="btnCompletar" onclick="subirArchivos()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded transition shadow-sm">
                         Subir a Drive y Completar
                     </button>
-                    <p id="mensajeExito" class="text-emerald-600 text-sm font-bold text-center mt-3 bg-emerald-50 p-2 rounded hidden">¡Archivos subidos y Excel actualizado!</p>
+                    <p id="mensajeExito" class="text-emerald-600 text-sm font-bold text-center mt-3 hidden">¡Archivos subidos!</p>
                 </div>
             </div>
 
-            <div class="lg:col-span-8 bg-white rounded-xl shadow-sm border border-slate-200 flex flex-col h-full min-h-[600px]">
-                <div class="flex justify-between items-center px-5 py-3 border-b border-slate-200 bg-slate-50 rounded-t-xl">
-                    <h2 class="text-md font-bold text-slate-800 flex items-center gap-2">
-                        <span>📊</span> Tu Base de Datos
-                    </h2>
-                    <span class="bg-emerald-100 text-emerald-800 border border-emerald-200 text-[10px] px-2 py-1 rounded font-bold uppercase tracking-wide flex items-center gap-1">
-                        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                        Sincronizado
-                    </span>
+            <div class="lg:col-span-8 bg-white rounded-xl shadow-sm border border-slate-200 p-6 flex flex-col h-full">
+                <div class="flex justify-between items-center mb-4 border-b pb-3">
+                    <h2 class="text-xl font-bold">Base de Datos de Jugadores</h2>
+                    <button id="btnAnadir" onclick="abrirModalBD(0)" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-lg text-sm font-bold shadow transition hidden">
+                        + Añadir Jugador
+                    </button>
                 </div>
                 
-                <div id="visorExcel" class="w-full flex-grow bg-slate-200 flex items-center justify-center rounded-b-xl overflow-hidden">
-                    <p class="text-slate-500 font-medium animate-pulse">Cargando base de datos...</p>
+                <div id="listaJugadores" class="flex-grow space-y-3 overflow-y-auto pr-2">
+                    <p id="estadoBD" class="text-slate-500 text-center py-10 font-medium">Cargando tu espacio de trabajo...</p>
                 </div>
             </div>
         </main>
     </div>
 
+    <div id="modalBD" class="hidden fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-xl max-w-2xl w-full p-6 shadow-2xl">
+            <h2 id="modalTitulo" class="text-xl font-bold mb-4 border-b pb-2">Datos del Jugador</h2>
+            <div class="grid grid-cols-2 gap-4 mb-4">
+                <input type="hidden" id="editFila">
+                <div>
+                    <label class="block text-xs font-bold mb-1 text-slate-500">NOMBRE</label>
+                    <input type="text" id="editNombre" class="w-full px-3 py-2 border border-slate-300 rounded text-sm outline-none focus:border-blue-600">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold mb-1 text-slate-500">APELLIDO/S</label>
+                    <input type="text" id="editApellidos" class="w-full px-3 py-2 border border-slate-300 rounded text-sm outline-none focus:border-blue-600">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold mb-1 text-slate-500">POS</label>
+                    <input type="text" id="editPos" class="w-full px-3 py-2 border border-slate-300 rounded text-sm outline-none focus:border-blue-600">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold mb-1 text-slate-500">ALTURA</label>
+                    <input type="text" id="editAltura" class="w-full px-3 py-2 border border-slate-300 rounded text-sm outline-none focus:border-blue-600">
+                </div>
+            </div>
+            <div class="mb-4">
+                <label class="block text-xs font-bold mb-1 text-slate-500">ATRIBUTOS CLAVE</label>
+                <input type="text" id="editAtributos" class="w-full px-3 py-2 border border-slate-300 rounded text-sm outline-none focus:border-blue-600">
+            </div>
+            <div class="mb-5">
+                <label class="block text-xs font-bold mb-1 text-slate-500">DESCRIPCIÓN TÉCNICA / TÁCTICA</label>
+                <textarea id="editDescripcion" rows="4" class="w-full px-3 py-2 border border-slate-300 rounded text-sm outline-none focus:border-blue-600"></textarea>
+            </div>
+            <div class="flex justify-end gap-3 pt-4 border-t border-slate-100">
+                <button onclick="cerrarModalBD()" class="bg-slate-200 hover:bg-slate-300 px-5 py-2 rounded text-slate-800 font-bold text-sm transition">Cancelar</button>
+                <button id="btnGuardarJugador" onclick="guardarJugador()" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded font-bold text-sm shadow transition">Guardar Informe</button>
+            </div>
+        </div>
+    </div>
+
     <script>
-        // ¡ACTUALIZA ESTA URL CON LA NUEVA VERSIÓN IMPLEMENTADA!
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxNQAdOPguxiqPQWSPuNHAUm3WO1_e5RnYO_PwtsZW03FycnfFbb389TOXzO0JV-7BN/exec"; 
+        // PEGA AQUÍ LA NUEVA URL DE APPS SCRIPT
+        const SCRIPT_URL = "TU_URL_AQUI"; 
         let datosUsuario = {};
 
         async function enviarA_Google(datos) {
@@ -96,11 +128,10 @@
             return await respuesta.json();
         }
 
-        // --- SISTEMA DE LOGIN ---
+        // --- 1. LOGIN ---
         document.getElementById("loginForm").addEventListener("submit", async (e) => {
             e.preventDefault();
-            document.getElementById("btnLogin").innerText = "Verificando Credenciales...";
-            
+            document.getElementById("btnLogin").innerText = "Conectando...";
             const correo = document.getElementById("correo").value;
             const contrasena = document.getElementById("contrasena").value;
             
@@ -109,105 +140,125 @@
                 if(res.exito) {
                     datosUsuario = res;
                     
-                    // Rellenar datos en la interfaz
                     document.getElementById("nombreUsuario").innerText = `Analista: ${res.nombre}`;
                     document.getElementById("txtPartido").innerText = res.partido || "Sin partido asignado";
                     document.getElementById("txtEquipo").innerText = res.equipo || "-";
                     document.getElementById("btnVerPartido").href = res.link || "#";
 
-                    // Cargar el Excel integrado del usuario (con rm=minimal para ocultar menús)
-                    const contenedorVisor = document.getElementById("visorExcel");
-                    if(datosUsuario.idExcel) {
-                        contenedorVisor.innerHTML = `<iframe src="https://docs.google.com/spreadsheets/d/${datosUsuario.idExcel}/edit?rm=minimal" class="w-full h-full border-0"></iframe>`;
-                    } else {
-                        contenedorVisor.innerHTML = `<p class="text-red-500 font-medium bg-red-50 p-4 rounded border border-red-200">No tienes un ID de Excel configurado en tu perfil.</p>`;
-                    }
-
-                    // Cambiar de pantalla
                     document.getElementById("login-screen").classList.add("hidden");
                     document.getElementById("dashboard-screen").classList.remove("hidden");
+
+                    if(datosUsuario.idExcel) {
+                        document.getElementById("btnAnadir").classList.remove("hidden");
+                        cargarJugadores();
+                    } else {
+                        document.getElementById("estadoBD").innerHTML = "<span class='text-red-500'>⚠️ No se ha encontrado tu archivo 'Google Sheets' en la carpeta.</span>";
+                    }
                 } else {
-                    mostrarError("Credenciales incorrectas o usuario no encontrado.");
+                    mostrarError("Credenciales incorrectas.");
                 }
-            } catch (error) {
-                mostrarError("Error de conexión. Revisa que la URL de SCRIPT_URL sea correcta.");
-            }
+            } catch (error) { mostrarError("Error de conexión."); }
         });
 
         function mostrarError(msg) {
-            const err = document.getElementById("loginError");
-            err.innerText = msg;
-            err.classList.remove("hidden");
+            document.getElementById("loginError").innerText = msg;
+            document.getElementById("loginError").classList.remove("hidden");
             document.getElementById("btnLogin").innerText = "Acceder al Panel";
         }
 
-        // --- SISTEMA DE SUBIDA A DRIVE ---
+        // --- 2. GESTIÓN NATIVA DE JUGADORES ---
+        async function cargarJugadores() {
+            document.getElementById("estadoBD").innerText = "Sincronizando jugadores...";
+            const res = await enviarA_Google({ accion: "cargar_jugadores", idExcel: datosUsuario.idExcel });
+            const contenedor = document.getElementById("listaJugadores");
+            contenedor.innerHTML = "";
+            
+            if(res.exito && res.datos.length > 0) {
+                res.datos.reverse().forEach(j => {
+                    const jStr = JSON.stringify(j).replace(/'/g, "\\'");
+                    contenedor.innerHTML += `
+                        <div class="p-4 border border-slate-200 rounded-lg bg-slate-50 hover:bg-white hover:shadow-md transition">
+                            <div class="flex justify-between items-start mb-2">
+                                <div>
+                                    <h5 class="font-black text-slate-800 text-lg">${j.nombre} ${j.apellidos}</h5>
+                                    <p class="text-xs text-slate-500 font-bold tracking-wide">POS: ${j.posicion} | ALT: ${j.altura}</p>
+                                </div>
+                                <button onclick='abrirModalBD(${j.fila}, ${jStr})' class="text-xs bg-slate-200 hover:bg-blue-600 hover:text-white text-slate-700 px-4 py-2 rounded font-bold transition">Editar</button>
+                            </div>
+                            <p class="text-sm font-semibold text-slate-700 mt-2">Atributos: <span class="font-normal text-slate-600">${j.atributos}</span></p>
+                            <p class="text-sm text-slate-600 mt-1">${j.descripcion}</p>
+                        </div>
+                    `;
+                });
+            } else {
+                contenedor.innerHTML = "<p class='text-center py-10 text-slate-500'>Aún no hay jugadores registrados.</p>";
+            }
+        }
+
+        function abrirModalBD(fila, datos = null) {
+            document.getElementById("editFila").value = fila;
+            document.getElementById("modalTitulo").innerText = fila === 0 ? "Registrar Nuevo Jugador" : "Editar Informe";
+            
+            document.getElementById("editNombre").value = datos ? datos.nombre : "";
+            document.getElementById("editApellidos").value = datos ? datos.apellidos : "";
+            document.getElementById("editPos").value = datos ? datos.posicion : "";
+            document.getElementById("editAltura").value = datos ? datos.altura : "";
+            document.getElementById("editAtributos").value = datos ? datos.atributos : "";
+            document.getElementById("editDescripcion").value = datos ? datos.descripcion : "";
+            
+            document.getElementById("modalBD").classList.remove("hidden");
+        }
+
+        function cerrarModalBD() { document.getElementById("modalBD").classList.add("hidden"); }
+
+        async function guardarJugador() {
+            const btn = document.getElementById("btnGuardarJugador");
+            btn.innerText = "Sincronizando..."; btn.disabled = true;
+
+            const datosJugador = {
+                fila: document.getElementById("editFila").value,
+                nombre: document.getElementById("editNombre").value,
+                apellidos: document.getElementById("editApellidos").value,
+                posicion: document.getElementById("editPos").value,
+                altura: document.getElementById("editAltura").value,
+                atributos: document.getElementById("editAtributos").value,
+                descripcion: document.getElementById("editDescripcion").value
+            };
+
+            await enviarA_Google({ accion: "guardar_jugador", idExcel: datosUsuario.idExcel, datosJugador: datosJugador });
+            
+            cerrarModalBD();
+            btn.innerText = "Guardar Informe"; btn.disabled = false;
+            cargarJugadores();
+        }
+
+        // --- 3. SUBIDA A DRIVE ---
         function leerBase64(file) {
             return new Promise((resolve, reject) => {
-                const reader = new FileReader(); 
-                reader.readAsDataURL(file);
+                const reader = new FileReader(); reader.readAsDataURL(file);
                 reader.onload = () => resolve(reader.result.split(',')[1]);
                 reader.onerror = error => reject(error);
             });
         }
 
         async function subirArchivos() {
-            if(!datosUsuario.idCarpeta) { 
-                alert("Error: No tienes una carpeta de Drive asignada en la base de datos."); 
-                return; 
-            }
-            
+            if(!datosUsuario.idCarpeta) return;
+            const btn = document.getElementById("btnCompletar");
+            btn.innerText = "Subiendo..."; btn.disabled = true;
+
             const pdfFile = document.getElementById("filePdf").files[0];
             const videoFile = document.getElementById("fileVideo").files[0];
 
-            if(!pdfFile && !videoFile) {
-                alert("Por favor, selecciona al menos un archivo (PDF o Vídeo) para entregar la tarea.");
-                return;
-            }
+            let payload = { accion: "subir_y_completar", fila: datosUsuario.fila, idCarpeta: datosUsuario.idCarpeta };
+            if(pdfFile) { payload.pdfBase64 = await leerBase64(pdfFile); payload.pdfNombre = pdfFile.name; }
+            if(videoFile) { payload.videoBase64 = await leerBase64(videoFile); payload.videoMime = videoFile.type; payload.videoNombre = videoFile.name; }
 
-            const btn = document.getElementById("btnCompletar");
-            btn.innerText = "Subiendo archivos... Espera por favor"; 
-            btn.disabled = true;
-            btn.classList.replace("bg-emerald-600", "bg-slate-500");
-            btn.classList.replace("hover:bg-emerald-700", "cursor-wait");
-
-            let payload = { 
-                accion: "subir_y_completar", 
-                fila: datosUsuario.fila, 
-                idCarpeta: datosUsuario.idCarpeta 
-            };
-            
-            if(pdfFile) { 
-                payload.pdfBase64 = await leerBase64(pdfFile); 
-                payload.pdfNombre = pdfFile.name; 
+            const res = await enviarA_Google(payload);
+            if(res.exito) {
+                btn.innerText = "Completado";
+                btn.classList.replace("bg-emerald-600", "bg-slate-400");
+                document.getElementById("mensajeExito").classList.remove("hidden");
             }
-            if(videoFile) { 
-                payload.videoBase64 = await leerBase64(videoFile); 
-                payload.videoMime = videoFile.type; 
-                payload.videoNombre = videoFile.name; 
-            }
-
-            try {
-                const res = await enviarA_Google(payload);
-                if(res.exito) {
-                    btn.innerText = "✓ Tarea Completada";
-                    btn.classList.replace("bg-slate-500", "bg-emerald-600");
-                    document.getElementById("mensajeExito").classList.remove("hidden");
-                } else {
-                    alert("Hubo un error guardando los archivos: " + res.error);
-                    resetBotonesSubida(btn);
-                }
-            } catch (error) {
-                alert("Falló la conexión al subir los archivos. Comprueba el tamaño del vídeo o tu conexión.");
-                resetBotonesSubida(btn);
-            }
-        }
-
-        function resetBotonesSubida(btn) {
-            btn.innerText = "Subir a Drive y Completar";
-            btn.disabled = false;
-            btn.classList.replace("bg-slate-500", "bg-emerald-600");
-            btn.classList.replace("cursor-wait", "hover:bg-emerald-700");
         }
     </script>
 </body>
