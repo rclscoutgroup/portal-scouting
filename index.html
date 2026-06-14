@@ -109,7 +109,7 @@
     </div>
 
     <script>
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxNQAdOPguxiqPQWSPuNHAUm3WO1_e5RnYO_PwtsZW03FycnfFbb389TOXzO0JV-7BN/exec"; // <-- REEMPLAZA CON TU NUEVA URL DE GOOGLE
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxNQAdOPguxiqPQWSPuNHAUm3WO1_e5RnYO_PwtsZW03FycnfFbb389TOXzO0JV-7BN/exec"; // <-- REEMPLAZA CON TU URL
         let datosUsuario = {};
 
         async function enviarA_Google(datos) {
@@ -134,7 +134,6 @@
 
                     if(res.isAdmin) {
                         document.getElementById("admin-screen").classList.remove("hidden");
-                        panelAdminActivo = true;
                         cargarPanelAdmin();
                     } else {
                         document.getElementById("dashboard-screen").classList.remove("hidden");
@@ -184,7 +183,7 @@
             }
         }
 
-        // --- PANEL ADMINISTRADOR CON CONTROL DE TIEMPOS ---
+        // --- PANEL ADMINISTRADOR CON CONTADOR ---
         async function cargarPanelAdmin() {
             const tabla = document.getElementById("tablaAdmin");
             const res = await enviarA_Google({ accion: "cargar_admin" });
@@ -196,15 +195,17 @@
                     let lCarpeta = oj.idCarpeta ? `https://drive.google.com/drive/folders/${oj.idCarpeta}` : '#';
                     let btnExcel = oj.idExcel ? `<button onclick="window.open('https://docs.google.com/spreadsheets/d/${oj.idExcel}/edit', '_blank')" class="bg-emerald-100 hover:bg-emerald-200 text-emerald-800 px-3 py-1 rounded text-xs font-bold transition">📊 Ver BD</button>` : `<span class="bg-slate-100 text-slate-400 px-3 py-1 rounded text-xs font-bold">Sin BD</span>`;
 
-                    // Mostramos las marcas de tiempo debajo del partido asignado
                     let infoTiempos = `<p class="text-xs text-slate-400 mt-1.5">📅 Asignado: <span class="text-slate-600 font-medium">${oj.fechaAsignacion}</span></p>`;
-                    if (oj.completado) {
-                        infoTiempos += `<p class="text-xs text-emerald-600">⏱️ Entregado: <span class="font-bold">${oj.fechaEntrega}</span></p>`;
-                    }
+                    if (oj.completado) infoTiempos += `<p class="text-xs text-emerald-600">⏱️ Entregado: <span class="font-bold">${oj.fechaEntrega}</span></p>`;
+                    
+                    // Contador de informes integrados al nombre
+                    let bEntregados = `<span class="inline-block mt-1 bg-indigo-50 text-indigo-700 border border-indigo-100 px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-wider">🏆 ${oj.entregados} Informes</span>`;
 
                     tabla.innerHTML += `
                         <tr class="hover:bg-slate-50">
-                            <td class="px-6 py-4 font-bold text-slate-700">${oj.nombre}</td>
+                            <td class="px-6 py-4 font-bold text-slate-700">
+                                ${oj.nombre}<br>${bEntregados}
+                            </td>
                             <td class="px-6 py-4">${bLeido} ${bComp}</td>
                             <td class="px-6 py-4">
                                 <p class="text-sm font-bold text-slate-800">${oj.partido || 'Libre'}</p>
