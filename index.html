@@ -57,7 +57,7 @@
 
             <div class="lg:col-span-8 bg-white rounded-xl shadow-sm border border-slate-200 p-2 flex flex-col h-full min-h-[600px]">
                 <div class="flex justify-between items-center px-4 py-2 border-b bg-slate-50 rounded-t-lg mb-2">
-                    <h2 class="text-md font-bold text-slate-800 flex items-center gap-2">📊 Base de Datos</h2>
+                    <h2 class="text-md font-bold text-slate-800">📊 Base de Datos</h2>
                 </div>
                 <div id="visorExcel" class="w-full flex-grow bg-slate-100 rounded flex items-center justify-center overflow-hidden">
                     <p class="text-slate-500 font-medium">Cargando espacio de trabajo...</p>
@@ -67,14 +67,9 @@
     </div>
 
     <div id="admin-screen" class="hidden min-h-screen flex flex-col bg-slate-100">
-        <header class="bg-slate-900 text-white p-4 shadow-md flex justify-between items-center sticky top-0 z-10 flex-wrap gap-4">
+        <header class="bg-slate-900 text-white p-4 shadow-md flex justify-between items-center sticky top-0 z-10">
             <h1 class="text-lg font-bold">🛡️ PANEL DE COORDINACIÓN</h1>
-            <div class="flex gap-3">
-                <button id="btnExportar" onclick="descargarBDAlPC()" class="bg-emerald-600 hover:bg-emerald-500 px-4 py-2 rounded text-sm font-bold flex items-center gap-2 shadow transition">
-                    <span>📥</span> Descargar Base de Datos (.Excel)
-                </button>
-                <button onclick="cargarPanelAdmin()" class="bg-slate-700 hover:bg-slate-600 px-4 py-2 rounded text-sm font-bold shadow transition">🔄 Actualizar</button>
-            </div>
+            <button onclick="cargarPanelAdmin()" class="bg-slate-700 hover:bg-slate-600 px-4 py-2 rounded text-sm font-bold shadow transition">🔄 Actualizar Panel</button>
         </header>
 
         <main class="p-6 max-w-7xl mx-auto w-full">
@@ -83,9 +78,9 @@
                     <thead class="bg-slate-50 border-b border-slate-200 text-slate-600 uppercase text-xs font-bold">
                         <tr>
                             <th class="px-6 py-4">Ojeador</th>
-                            <th class="px-6 py-4">Estado</th>
-                            <th class="px-6 py-4">Partido Asignado</th>
-                            <th class="px-6 py-4 text-center">Gestión & Acciones</th>
+                            <th class="px-6 py-4">Estado de Entrega</th>
+                            <th class="px-6 py-4">Partido Activo / Fechas de Control</th>
+                            <th class="px-6 py-4 text-center">Acciones</th>
                         </tr>
                     </thead>
                     <tbody id="tablaAdmin" class="divide-y divide-slate-100">
@@ -114,7 +109,7 @@
     </div>
 
     <script>
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxNQAdOPguxiqPQWSPuNHAUm3WO1_e5RnYO_PwtsZW03FycnfFbb389TOXzO0JV-7BN/exec"; // <-- CAMBIA ESTO POR TU URL DE GOOGLE
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxNQAdOPguxiqPQWSPuNHAUm3WO1_e5RnYO_PwtsZW03FycnfFbb389TOXzO0JV-7BN/exec"; // <-- REEMPLAZA CON TU NUEVA URL DE GOOGLE
         let datosUsuario = {};
 
         async function enviarA_Google(datos) {
@@ -139,6 +134,7 @@
 
                     if(res.isAdmin) {
                         document.getElementById("admin-screen").classList.remove("hidden");
+                        panelAdminActivo = true;
                         cargarPanelAdmin();
                     } else {
                         document.getElementById("dashboard-screen").classList.remove("hidden");
@@ -188,7 +184,7 @@
             }
         }
 
-        // --- PANEL ADMINISTRADOR ---
+        // --- PANEL ADMINISTRADOR CON CONTROL DE TIEMPOS ---
         async function cargarPanelAdmin() {
             const tabla = document.getElementById("tablaAdmin");
             const res = await enviarA_Google({ accion: "cargar_admin" });
@@ -198,14 +194,23 @@
                     let bLeido = oj.leido ? `<span class="bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs font-bold mr-2">👁️ Leído</span>` : `<span class="bg-slate-100 text-slate-500 px-2 py-1 rounded text-xs font-bold mr-2">No Leído</span>`;
                     let bComp = oj.completado ? `<span class="bg-emerald-100 text-emerald-800 px-2 py-1 rounded text-xs font-bold">✅ Completado</span>` : `<span class="bg-amber-100 text-amber-800 px-2 py-1 rounded text-xs font-bold">⏳ Pendiente</span>`;
                     let lCarpeta = oj.idCarpeta ? `https://drive.google.com/drive/folders/${oj.idCarpeta}` : '#';
-                    
                     let btnExcel = oj.idExcel ? `<button onclick="window.open('https://docs.google.com/spreadsheets/d/${oj.idExcel}/edit', '_blank')" class="bg-emerald-100 hover:bg-emerald-200 text-emerald-800 px-3 py-1 rounded text-xs font-bold transition">📊 Ver BD</button>` : `<span class="bg-slate-100 text-slate-400 px-3 py-1 rounded text-xs font-bold">Sin BD</span>`;
+
+                    // Mostramos las marcas de tiempo debajo del partido asignado
+                    let infoTiempos = `<p class="text-xs text-slate-400 mt-1.5">📅 Asignado: <span class="text-slate-600 font-medium">${oj.fechaAsignacion}</span></p>`;
+                    if (oj.completado) {
+                        infoTiempos += `<p class="text-xs text-emerald-600">⏱️ Entregado: <span class="font-bold">${oj.fechaEntrega}</span></p>`;
+                    }
 
                     tabla.innerHTML += `
                         <tr class="hover:bg-slate-50">
                             <td class="px-6 py-4 font-bold text-slate-700">${oj.nombre}</td>
                             <td class="px-6 py-4">${bLeido} ${bComp}</td>
-                            <td class="px-6 py-4"><p class="text-sm font-bold text-slate-800">${oj.partido || 'Libre'}</p><p class="text-xs text-slate-500">${oj.equipo || '-'}</p></td>
+                            <td class="px-6 py-4">
+                                <p class="text-sm font-bold text-slate-800">${oj.partido || 'Libre'}</p>
+                                <p class="text-xs text-slate-500">${oj.equipo || '-'}</p>
+                                ${infoTiempos}
+                            </td>
                             <td class="px-6 py-4 text-center space-x-1">
                                 <a href="${lCarpeta}" target="_blank" class="inline-block bg-slate-200 hover:bg-slate-300 px-3 py-1 rounded text-xs font-bold transition">📁 Carpeta</a>
                                 ${btnExcel}
@@ -216,53 +221,6 @@
             }
         }
 
-        // --- DESCARGA DIRECTA AL PC EN FORMATO EXCEL (.CSV COMPATIBLE) ---
-        async function descargarBDAlPC() {
-            const btn = document.getElementById("btnExportar");
-            const originalText = btn.innerHTML;
-            btn.innerHTML = "⏳ Extrayendo y descargando...";
-            btn.disabled = true;
-            btn.classList.replace("bg-emerald-600", "bg-slate-500");
-
-            try {
-                const res = await enviarA_Google({ accion: "exportar_global" });
-                if(res.exito && res.datos && res.datos.length > 1) {
-                    
-                    // Convertimos la lista de jugadores a estructura CSV compatible con Excel español
-                    let csvContent = "\uFEFF"; // Código BOM para que Excel no rompa las tildes ni las Ñ
-                    res.datos.forEach(fila => {
-                        let filaLimpia = fila.map(celda => `"${String(celda).replace(/"/g, '""')}"`);
-                        csvContent += filaLimpia.join(";") + "\n"; // Separador punto y coma oficial de Excel España
-                    });
-
-                    // Forzamos la descarga del archivo en tu PC
-                    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
-                    const url = URL.createObjectURL(blob);
-                    const link = document.createElement("a");
-                    link.href = url;
-                    link.download = `BD_GLOBAL_RCL_${new Date().toLocaleDateString().replace(/\//g, '-')}.csv`;
-                    document.body.appendChild(link);
-                    link.click();
-                    document.body.removeChild(link);
-
-                    btn.innerHTML = "✅ ¡Descargado con Éxito!";
-                } else {
-                    alert("No se encontraron jugadores que recopilar.");
-                    btn.innerHTML = originalText;
-                }
-            } catch(e) {
-                alert("Error de red al procesar la descarga.");
-                btn.innerHTML = originalText;
-            }
-            
-            setTimeout(() => {
-                btn.innerHTML = originalText;
-                btn.disabled = false;
-                btn.classList.replace("bg-slate-500", "bg-emerald-600");
-            }, 3000);
-        }
-
-        // --- MODALES ASIGNAR TAREA ---
         function abrirModalAsignar(fila, nombre, partido, equipo, link) {
             document.getElementById("asignarFila").value = fila; document.getElementById("nombreAsignar").innerText = `Para: ${nombre}`;
             document.getElementById("asigPartido").value = partido && partido !== 'undefined' ? partido : "";
